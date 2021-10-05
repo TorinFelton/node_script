@@ -72,11 +72,19 @@ namespace node_script.Lexer
                 else if (Regex.IsMatch(popped_char.ToString(), Labels.IdentifierPattern))
                     yield return new Token("identifier", RegEx_Eat(popped_char, Labels.IdentifierPattern, charQ));
 
-                // GRAMMAR: Special chars that denote non-maths operations
-                else if (Labels.Grammar.Contains(popped_char))
-                    // The reason we don't just store the single character is because of grammar such as "==" or "++", etc.
-                    // We just capture as many as we can
-                    yield return new Token("grammar", Eat(popped_char, Labels.Grammar, charQ));
+                // SINGLE_GRAMMAR: Special characters such as brackets and other 'grammar' for the programs
+                else if (Labels.SingleGrammar.Contains(popped_char))
+                    // These are grammar chars we want to capture individually, e.g. we want to capture brackets as separate tokens
+                    // This: ("grammar", "("), ("grammar", "(")
+                    // Instead of: ("grammar", "((")
+                    yield return new Token("grammar", popped_char.ToString());
+
+                else if (Labels.FlexGrammar.Contains(popped_char))
+                    // These are grammar chars we want to be captured together with any following ones
+                    // E.g we want:
+                    // This: ("grammar", "==")
+                    // Instead of: ("grammar", "="), ("grammar", "=")
+                    yield return new Token("grammar", Eat(popped_char, Labels.FlexGrammar, charQ));
             }
         }
 
@@ -115,7 +123,7 @@ namespace node_script.Lexer
         {
             /* Duplicate of Eat method just using regex pattern validation instead of just checking if the char is in the pattern string
              * NOTE: This is not using RegEx to match Token types, it is just using it to cover a range of potential chars
-             * e.g  [a-z][A-Z] could be used if you want to Eat the next chars that are in the alphabet case-insensitive.
+             * e.g  [a-zA-Z] could be used if you want to Eat the next chars that are in the alphabet case-insensitive.
              */
 
             string toReturn = first_char.ToString();

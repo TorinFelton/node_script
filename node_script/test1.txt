@@ -1,4 +1,4 @@
 ﻿outputln("Test");
-int a = 1;
+int a = 1.094;
 string b = "Two";
 float a = 0.1;

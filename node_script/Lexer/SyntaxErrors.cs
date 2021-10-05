@@ -8,8 +8,8 @@ namespace node_script.Lexer
     {
         public DecimalSyntaxError(string value, int charPos, int linePos) : base()
         {
-            Error.ShowError("DecimalSyntaxError (Line: " + linePos.ToString() + ", Char: " + charPos.ToString() +
-                "): Could not tokenise this number correctly: " + value);
+            Error.ShowError("DecimalSyntaxError (Line: " + linePos.ToString() + ", File Char: " + charPos.ToString() +
+                "): Could not tokenise this number correctly: '" + value + "'");
         }
     }
 
