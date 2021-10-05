@@ -9,7 +9,6 @@
     <Folder Include="Evaluator\" />
     <Folder Include="Tools\" />
     <Folder Include="Types\" />
-    <Folder Include="Parser\" />
   </ItemGroup>
 
 </Project>

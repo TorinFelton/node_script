@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace node_script
 {
@@ -6,7 +7,8 @@ namespace node_script
     {
         static void Main(string[] args)
         {
-            Lexer.Test.Test1();
+            //Lexer.Test.Test1();
+
         }
     }
 }
