@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace node_script.Parser.StepPatterns
+namespace node_script.PatternParsers
 {
     static class Test1
     {
-        public static void Test()
+        public static string Test()
         {
-            Console.WriteLine("Test1");
+            return "Test1";
         }
     }
 }
