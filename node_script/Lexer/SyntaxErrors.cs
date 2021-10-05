@@ -6,20 +6,28 @@ namespace node_script.Lexer
 {
     class DecimalSyntaxError : Exception
     {
-        public DecimalSyntaxError(string value, int charPos, int linePos) : base()
+        public DecimalSyntaxError(string value, int linePos) : base()
         {
-            Error.ShowError("DecimalSyntaxError (Line: " + linePos.ToString() + ", File Char: " + charPos.ToString() +
-                "): Could not tokenise this number correctly: '" + value + "'");
+            Error.ShowError("DecimalSyntaxError: Could not tokenise this number correctly: '" + value + "'", linePos);
+        }
+
+    }
+
+    class UnboundStringSyntaxError : Exception
+    {
+        public UnboundStringSyntaxError(int linePos) : base()
+        {
+            Error.ShowError("UnboundStringSyntaxError: String delimiter never found. Maybe you forgot to close your quotes?", linePos);
         }
     }
 
     static class Error // direct copy from NEA
     {
-        public static void ShowError(string err) // Pause program (input prompt) then kill it.
+        public static void ShowError(string err, int linePos) // Pause program (input prompt) then kill it.
         {
 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(err);
+            Console.WriteLine("[Line " + linePos.ToString() + "] " + err);
             Console.ForegroundColor = ConsoleColor.Gray;
 
             if (!((new System.Diagnostics.StackTrace()).ToString().ToLower().Contains("shell")))

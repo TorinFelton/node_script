@@ -56,9 +56,8 @@ namespace node_script.Lexer
                     string number = Eat(popped_char, Labels.Numeric, charQ);
 
                     if (number.Contains('.') && !Regex.IsMatch(number, "[0-9].[0-9]"))
-                        throw new DecimalSyntaxError(number, contents.Length - (charQ.Count + number.Length), line_traceback);
+                        throw new DecimalSyntaxError(number, line_traceback);
                     // Throw error because token does not conform to "XXXX.XXXX" decimal notation.
-                    // To throw error, must calculate the char this token begun at: contents.Length-(charQ.Count+number.Length)
 
 
                     yield return new Token("number", number);
@@ -66,7 +65,7 @@ namespace node_script.Lexer
 
                 // STRINGS: String delimiters found, begin Token capture for string
                 else if (Labels.StringDelimiters.Contains(popped_char))
-                    yield return new Token("string", Delimiter_Eat(popped_char.ToString(), charQ));
+                    yield return new Token("string", Delimiter_Eat(popped_char.ToString(), charQ, line_traceback));
 
                 // IDENTIFIERS: Non-delimited alphabetic
                 else if (Regex.IsMatch(popped_char.ToString(), Labels.IdentifierPattern))
@@ -110,12 +109,13 @@ namespace node_script.Lexer
             return toReturn; // return the whole 'word' of chars that matched the pattern.
         }
 
-        public static string Delimiter_Eat(string delimiters, Queue<char> charQ)
+        public static string Delimiter_Eat(string delimiters, Queue<char> charQ, int line_traceback) // line_traceback required to trace string error
         {
             string toReturn = "";
 
             // Keep appending chars until one of the delims is found
             while (MoreChars(charQ) && !delimiters.Contains(charQ.Peek())) toReturn += charQ.Dequeue();
+            if (!MoreChars(charQ)) throw new UnboundStringSyntaxError(line_traceback);
             charQ.Dequeue(); // Pop delimiter
             return toReturn;
         }
