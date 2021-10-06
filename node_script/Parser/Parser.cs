@@ -20,7 +20,8 @@ namespace node_script.Parser
          * that there is an error in the syntax, just instead that another parser should have a go. 
          * If none of the parsers return true ever, there is either no syntax or it is unrecognised.
          */
-        public static List<Func<Queue<Token>, bool>> Parsers = new List<Func<Queue<Token>, bool>>()
+        public static List<Func<List<Token>, List<string>, bool>> Parsers = new List<Func<List<Token>, List<string>, bool>>() 
+        // List of functions that take a list of tokens for argument and return a bool
         {
             // This list will grow longer the more parsers I add.
             // I have chosen this method so that I can dynamically add/remove parsers for specific sets of syntax expressions.
@@ -31,23 +32,23 @@ namespace node_script.Parser
         };
 
         // TODO: Step type, rm 'void'
-        public static void Parse(Queue<Token> tokenQueue)
+        public static void Parse(List<Token> tokenList, List<string> steps)
         {
             bool keepParsing = true;
 
-            while (keepParsing && tokenQueue.Count > 0)
+            while (keepParsing && tokenList.Count > 0)
             {
                 keepParsing = false; // Assume we should stop trying to parse anything after this unless we can move on
 
-                foreach (Func<Queue<Token>, bool> parser in Parsers)
+                foreach (Func<List<Token>, List<string>, bool> parser in Parsers)
                 {
-                    if (parser(tokenQueue)) keepParsing = true;
+                    if (parser(tokenList, steps)) keepParsing = true;
                     // Try parsing using each parser and if they return true (successful) then keep the parent loop going.
                 }
             }
 
             // If we exited the loop because keepParsing was false BUT there were still tokens in the queue, it means we had syntax that none of our parsers understood.
-            if (tokenQueue.Count > 0) throw new UnrecognisedSyntaxError(0); // TODO: Figure out line tracing method.
+            if (tokenList.Count > 0) throw new UnrecognisedSyntaxError(0); // TODO: Figure out line tracing method.
         }
     }
 }

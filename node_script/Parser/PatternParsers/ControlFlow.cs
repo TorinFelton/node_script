@@ -7,7 +7,7 @@ namespace node_script.PatternParsers
 {
     static class ControlFlow
     {
-        public static bool TryParseControlFlow(Queue<Token> tokenQueue)
+        public static bool TryParseControlFlow(List<Token> tokens, List<string> steps)
         {
             return false;
         }

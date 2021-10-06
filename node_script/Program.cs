@@ -9,7 +9,7 @@ namespace node_script
     {
         static void Main(string[] args)
         {
-            //Lexer.Test.Test1();
+            Lexer.Test.Test1();
 
             
         }

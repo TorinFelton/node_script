@@ -17,5 +17,9 @@ namespace node_script.Lexer
         public const string SingleGrammar = "(){};<>!|,"; // Special grammar chars that are tokenised individually
 
         public const string FlexGrammar = "=&"; // Special grammar characters that are to be tokenised together
+
+        public const string Keywords = "node func for while loop"; // Keywords for language, so that they are not confused with variable names
+
+        public const string Types = "int float string bool";
     }
 }

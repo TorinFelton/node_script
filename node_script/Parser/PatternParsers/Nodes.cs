@@ -7,7 +7,7 @@ namespace node_script.PatternParsers
 {
     static class Nodes
     {
-        public static bool TryParseNodes(Queue<Token> tokenQueue)
+        public static bool TryParseNodes(List<Token> tokens, List<string> steps)
         {
             return false;
         }
