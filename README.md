@@ -1,7 +1,7 @@
 # node_script [Unfinished, WIP]
-A follow on from and more fleshed out version of my secondary-school Interpreter project.#
+A follow on from and more fleshed out version of my secondary-school Interpreter project.
 
-Progress:
+Initial Foundations Progress:
 - [x] [Tokeniser](https://github.com/TorinFelton/node_script/blob/master/node_script/Lexer/Tokeniser.cs)
 - [ ] Parser
 - [ ] Evaluator
