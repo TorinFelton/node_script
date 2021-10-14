@@ -4,7 +4,7 @@ using System.Text;
 
 namespace node_script.Lexer
 {
-    class Token
+    public class Token
     {
         public string Type;
         public string Value;

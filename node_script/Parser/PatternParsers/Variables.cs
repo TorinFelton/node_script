@@ -4,25 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace node_script.PatternParserss
+namespace node_script.PatternParsers
 {
     static class Variables
     {
         public static bool TryParseVariables(List<Token> tokens, List<string> steps)
         {
-            
+            return false;
         }
 
         public static bool Variable_Definition(List<Token> tokens, List<string> steps)
         {
+            List<string> pattern = new List<string>() { "!identifier", "!identifier", "$grammar =" };
             // Pattern we're looking for:
             // IDENTIFIER IDENTIFIER = EXPR;
             // "If the first token is an identifier and in the Types list, and the second token is also an identifier"
-            if (tokens[0].Type == "identifier" 
-                && Labels.Types.Contains(tokens[0].Value.ToLower())
-                && tokens[1].Type == "identifier"
-                && tokens[2].)
+            if (PatternParsers.PatternMatching.IsMatch(pattern, tokens))
             {
+                return true;
                 // We now know we have found the beginning of a variable definition
                 int front_pointer = 0; // To use later so we can remove the tokens we've used up from the 'tokens' list
 
@@ -33,6 +32,7 @@ namespace node_script.PatternParserss
 
                 front_pointer = 2;
             }
+            return false;
         }
     }
 }
