@@ -15,6 +15,7 @@ namespace node_script.Lexer
 
         public Token() { }
 
+        public bool Matches(string type, string value) => this.Type == type && this.Value == value;
         public override string ToString()
         {
             return "(" + Type + ", '" + Value + "')";

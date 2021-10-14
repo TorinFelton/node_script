@@ -29,4 +29,12 @@ namespace node_script
             Error.ShowError("UnrecognisedSyntaxError: None of the parsers could recognise this syntax. Have you made a typo?", linePos);
         }
     }
+
+    class MissingSemiColError : Exception
+    {
+        public MissingSemiColError(int linePos) : base()
+        {
+            Error.ShowError("MissingSemiColError: Could not find a semi colon to end off statement.", linePos);
+        }
+    }
 }

@@ -15,22 +15,32 @@ namespace node_script.PatternParsers
 
         public static bool Variable_Definition(List<Token> tokens, List<string> steps)
         {
-            List<string> pattern = new List<string>() { "!identifier", "!identifier", "$grammar =" };
             // Pattern we're looking for:
             // IDENTIFIER IDENTIFIER = EXPR;
-            // "If the first token is an identifier and in the Types list, and the second token is also an identifier"
+            // our IsMatch function cannot match expressions as they are of variable length and token types
+            // therefore we can only match the "IDENTIFIER INDEITIFER = " part first:
+            List<string> pattern = new List<string>() { "!identifier", "!identifier", "$grammar =" };
+
             if (PatternParsers.PatternMatching.IsMatch(pattern, tokens))
             {
-                return true;
-                // We now know we have found the beginning of a variable definition
-                int front_pointer = 0; // To use later so we can remove the tokens we've used up from the 'tokens' list
-
+                // we know that this *has* to be a variable declaration now
                 VariableDefinition varDef = new VariableDefinition();
-                // Initialise var def Step object to fill with information about this variable definition
+
                 varDef.Type = tokens[0].Value;
                 varDef.Name = tokens[1].Value;
+                // tokens[2] == "="
+                // so start i at 3
+                int i = 3;
+                while (i < tokens.Count && !tokens[i].Matches("grammar", ";"))
+                {
+                    varDef.Expression.Add(tokens[i]);
+                    i++;
+                }
 
-                front_pointer = 2;
+                if (!tokens[i].Matches("grammar", ";")) throw new MissingSemiColError(0);
+
+                Console.WriteLine(varDef.ToString());
+                return true;
             }
             return false;
         }
