@@ -9,15 +9,27 @@ namespace node_script.PatternParsers
 {
     static class Variables
     {
-        public static List<Func<List<Token>, List<Step>, bool>> VariableParsers = new List<Func<List<Token>, List<Step>, bool>>() 
+        public static List<Func<List<Token>, List<Step>, bool>> variableParsers = new List<Func<List<Token>, List<Step>, bool>>() 
         // List of variable-related syntax parsing functions.
         {
             // This list will grow as I add more syntax variants for parsing anything to do with variables.
             Variable_Definition, // e.g int a = 2 + 2;
+            Variable_Change,     // e.g a = 2;
         };
         public static bool TryParseVariables(List<Token> tokens, List<Step> steps)
         {
-            return false;
+            int i = 0;
+            while (
+                  i < variableParsers.Count             // while we have not ran out of parsers to try and
+               && !variableParsers[i](tokens, steps)    // we have not found a parser that has succeeded
+                  ) i++;
+            // when we reach this point, one of two things must have happened:
+            // 1. We didn't find a parser that managed to parse the token pattern we must return false, thus i == variableParser.Count must be TRUE.
+            // exclusively OR:
+            // 2. We found a parser that successfully parsed the token pattern and the loop ended because of it.
+            
+
+            return !(i == variableParsers.Count); // if i == variableParsers.Count is TRUE then we have failed and must return FALSE.
         }
 
         public static bool Variable_Definition(List<Token> tokens, List<Step> steps)

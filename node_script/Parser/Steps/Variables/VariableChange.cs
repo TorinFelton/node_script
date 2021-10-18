@@ -21,7 +21,7 @@ namespace node_script.Parser.Steps.Variables
         public override string ToString()
         {
             string exprContents = "";
-            foreach (Token tok in Expression) exprContents += tok.Value + " ";
+            foreach (Token tok in Expression) exprContents += tok.Value;
             return $"VAR CHANGE: {Name} changes to expression: '{exprContents}'";
         }
     }
