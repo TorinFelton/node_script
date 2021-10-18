@@ -28,29 +28,43 @@ namespace node_script.PatternParsers
             // therefore we can only match the "IDENTIFIER INDEITIFER = " part first:
             List<string> pattern = new List<string>() { "!identifier", "!identifier", "$grammar =" };
 
-            if (PatternParsers.PatternTools.IsMatch(pattern, tokens))
-            {
-                // we know that this *has* to be a variable declaration now
-                VariableDefinition varDef = new VariableDefinition(0);
+            if (!PatternTools.IsMatch(pattern, tokens)) return false; // if there is no match then return false and don't execute anything after.
+            
+            // we know that this *has* to be a variable declaration now
+            VariableDefinition varDef = new VariableDefinition(0);
 
-                varDef.Type = tokens[0].Value;
-                varDef.Name = tokens[1].Value;
-                // tokens[2] == "="
-                // so start index starts at 3 for the expression when grabbing:
-                varDef.Expression = PatternTools.GrabDelimitedPattern(3, tokens, new Token("grammar", ";"));
+            varDef.Type = tokens[0].Value;
+            varDef.Name = tokens[1].Value;
+            // tokens[2] == "="
+            // so start index starts at 3 for the expression when grabbing:
+            varDef.Expression = PatternTools.GrabDelimitedPattern(3, tokens, new Token("grammar", ";"));
 
-                Console.WriteLine(varDef.ToString());
-                steps.Add(varDef);
+            steps.Add(varDef);
 
-                tokens.RemoveRange(0, varDef.Expression.Count + 4); // remove all tokens we have eaten up to and including the ';'
-                return true;
-            }
-            return false;
+            tokens.RemoveRange(0, 3 + varDef.Expression.Count + 1); // remove all tokens we have eaten up to and including the ';'
+
+            return true;
         }
 
         public static bool Variable_Change(List<Token> tokens, List<Step> steps)
         {
+            // Pattern we're looking for:
+            // IDENTIFIER = EXPR;
 
+            List<string> pattern = new List<string>() { "!identifier", "$grammar =" };
+
+            if (!PatternTools.IsMatch(pattern, tokens)) return false; // if no match then return false and exit this block
+
+            VariableChange varChange = new VariableChange(
+                0, 
+                tokens[0].Value, // the first token is the IDENTIFIER type that contains the variable's name
+                PatternTools.GrabDelimitedPattern(2, tokens, new Token("grammar", ";"))); // grab the expression that begins after the '=' token and stops when you find a ';'
+
+            steps.Add(varChange);
+
+            tokens.RemoveRange(0, 2 + varChange.Expression.Count + 1); // Remove all tokens that we have just eaten up to and including the ';'
+
+            return true;
         }
     }
 }
