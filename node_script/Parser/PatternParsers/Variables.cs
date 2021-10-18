@@ -1,4 +1,5 @@
 ﻿using node_script.Lexer;
+using node_script.Parser.Steps;
 using node_script.Parser.Steps.Variables;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,18 @@ namespace node_script.PatternParsers
 {
     static class Variables
     {
-        public static List<Func<List<Token>, List<string>, bool>> VariableParsers = new List<Func<List<Token>, List<string>, bool>>() 
+        public static List<Func<List<Token>, List<Step>, bool>> VariableParsers = new List<Func<List<Token>, List<Step>, bool>>() 
         // List of variable-related syntax parsing functions.
         {
             // This list will grow as I add more syntax variants for parsing anything to do with variables.
             Variable_Definition, // e.g int a = 2 + 2;
         };
-        public static bool TryParseVariables(List<Token> tokens, List<string> steps)
+        public static bool TryParseVariables(List<Token> tokens, List<Step> steps)
         {
             return false;
         }
 
-        public static bool Variable_Definition(List<Token> tokens, List<string> steps)
+        public static bool Variable_Definition(List<Token> tokens, List<Step> steps)
         {
             // Pattern we're looking for:
             // IDENTIFIER IDENTIFIER = EXPR;
@@ -39,11 +40,17 @@ namespace node_script.PatternParsers
                 varDef.Expression = PatternTools.GrabDelimitedPattern(3, tokens, new Token("grammar", ";"));
 
                 Console.WriteLine(varDef.ToString());
+                steps.Add(varDef);
 
                 tokens.RemoveRange(0, varDef.Expression.Count + 4); // remove all tokens we have eaten up to and including the ';'
                 return true;
             }
             return false;
+        }
+
+        public static bool Variable_Change(List<Token> tokens, List<Step> steps)
+        {
+
         }
     }
 }

@@ -115,7 +115,7 @@ namespace node_script.Lexer
 
             // Keep appending chars until one of the delims is found
             while (MoreChars(charQ) && !delimiters.Contains(charQ.Peek())) toReturn += charQ.Dequeue();
-            if (!MoreChars(charQ)) throw new UnboundStringSyntaxError(line_traceback);
+            if (!MoreChars(charQ)) throw new MissingDelimiterError("\"", line_traceback);
             charQ.Dequeue(); // Pop delimiter
             return toReturn;
         }

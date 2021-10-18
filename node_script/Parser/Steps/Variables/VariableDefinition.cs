@@ -23,7 +23,7 @@ namespace node_script.Parser.Steps.Variables
         {
             string exprContents = "";
             foreach (Token tok in Expression) exprContents += tok.Value + " ";
-            return Type + " " + Name + " " + exprContents;
+            return $"VAR DEFINITION: {Type} {Name} expression: '{exprContents}'";
         }
     }
 }

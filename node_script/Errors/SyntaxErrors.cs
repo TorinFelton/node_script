@@ -14,14 +14,6 @@ namespace node_script
 
     }
 
-    class UnboundStringSyntaxError : Exception
-    {
-        public UnboundStringSyntaxError(int linePos) : base()
-        {
-            Error.ShowError("UnboundStringSyntaxError: String delimiter never found. Maybe you forgot to close your quotes?", linePos);
-        }
-    }
-
     class UnrecognisedSyntaxError : Exception
     {
         public UnrecognisedSyntaxError(int linePos) : base()
@@ -34,7 +26,7 @@ namespace node_script
     {
         public MissingDelimiterError(string delimiter, int linePos) : base()
         {
-            Error.ShowError("MissingSemiColError: Could not find the delimiter: '" + delimiter + "' to end off statement.", linePos);
+            Error.ShowError("MissingDelimiterError: Could not find the delimiter: '" + delimiter + "' to end token.", linePos);
         }
     }
 }

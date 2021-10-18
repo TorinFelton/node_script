@@ -1,4 +1,5 @@
 ﻿using node_script.Lexer;
+using node_script.Parser.Steps;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +21,7 @@ namespace node_script.Parser
          * that there is an error in the syntax, just instead that another parser should have a go. 
          * If none of the parsers return true ever, there is either no syntax or it is unrecognised.
          */
-        public static List<Func<List<Token>, List<string>, bool>> Parsers = new List<Func<List<Token>, List<string>, bool>>() 
+        public static List<Func<List<Token>, List<Step>, bool>> Parsers = new List<Func<List<Token>, List<Step>, bool>>() 
         // List of functions that take a list of tokens for argument and return a bool
         {
             // This list will grow longer the more parsers I add.
@@ -32,7 +33,7 @@ namespace node_script.Parser
         };
 
         // TODO: Step type, rm 'void'
-        public static void Parse(List<Token> tokenList, List<string> steps)
+        public static void Parse(List<Token> tokenList, List<Step> steps)
         {
             bool keepParsing = true;
 
@@ -40,7 +41,7 @@ namespace node_script.Parser
             {
                 keepParsing = false; // Assume we should stop trying to parse anything after this unless we can move on
 
-                foreach (Func<List<Token>, List<string>, bool> parser in Parsers)
+                foreach (Func<List<Token>, List<Step>, bool> parser in Parsers)
                 {
                     if (parser(tokenList, steps)) keepParsing = true;
                     // Try parsing using each parser and if they return true (successful) then keep the parent loop going.
