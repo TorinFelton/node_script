@@ -8,7 +8,8 @@ namespace node_script.Lexer
     {
         public static void Test1()
         {
-            string contents = System.IO.File.ReadAllText("C:\\Users\\torin\\Source\\Repos\\node_script\\node_script\\test1.txt");
+            //string contents = System.IO.File.ReadAllText("C:\\Users\\torin\\Source\\Repos\\node_script\\node_script\\test1.txt");
+            string contents = Console.ReadLine();
             List<Token> tokens = new List<Token>();
 
 
@@ -17,6 +18,7 @@ namespace node_script.Lexer
                 tokens.Add(tok);
             }
 
+            while (tokens.Count > 0)
             Console.WriteLine(PatternParsers.Variables.Variable_Definition(tokens, new List<string>() { }));
 
         }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace node_script.PatternParsers
 {
-    public static class PatternMatching
+    public static class PatternTools
     {
         public static bool IsMatch(List<string> pattern, List<Token> tokens)
         {
@@ -34,6 +34,20 @@ namespace node_script.PatternParsers
             }
             return true;
 
+        }
+
+        public static List<Token> GrabDelimitedPattern(int index, List<Token> tokens, Token delimiter)
+        {
+            List<Token> toReturn = new List<Token>();
+            while (index < tokens.Count && !tokens[index].Matches(delimiter.Type, delimiter.Value))
+            {
+                toReturn.Add(tokens[index]);
+                index++;
+            }
+
+            if (!tokens[index].Matches(delimiter.Type, delimiter.Value)) throw new MissingDelimiterError(delimiter.Value, 0);
+
+            return toReturn;
         }
 
     }

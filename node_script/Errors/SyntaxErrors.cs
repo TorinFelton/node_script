@@ -30,11 +30,11 @@ namespace node_script
         }
     }
 
-    class MissingSemiColError : Exception
+    class MissingDelimiterError : Exception
     {
-        public MissingSemiColError(int linePos) : base()
+        public MissingDelimiterError(string delimiter, int linePos) : base()
         {
-            Error.ShowError("MissingSemiColError: Could not find a semi colon to end off statement.", linePos);
+            Error.ShowError("MissingSemiColError: Could not find the delimiter: '" + delimiter + "' to end off statement.", linePos);
         }
     }
 }

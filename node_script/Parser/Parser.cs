@@ -25,10 +25,10 @@ namespace node_script.Parser
         {
             // This list will grow longer the more parsers I add.
             // I have chosen this method so that I can dynamically add/remove parsers for specific sets of syntax expressions.
-            PatternParsers.ControlFlow.TryParseControlFlow,
-            PatternParsers.Variables.TryParseVariables,
-            PatternParsers.Functions.TryParseFunctions,
-            PatternParsers.Nodes.TryParseNodes
+            PatternParsers.ControlFlow.TryParseControlFlow, // if else, while, for, etc.
+            PatternParsers.Variables.TryParseVariables,     // variable assignments, declarations, manipulation, etc.
+            PatternParsers.Functions.TryParseFunctions,     // function definitions, calls
+            PatternParsers.Nodes.TryParseNodes              // node definitions, jumps, traversal
         };
 
         // TODO: Step type, rm 'void'
