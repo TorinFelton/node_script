@@ -9,10 +9,7 @@ namespace node_script.Parser.Steps
         private int position;
 
         public Step(int linePosition) { position = linePosition; }
-        public override string ToString()
-        {
-            return base.ToString();
-        }
+        public abstract override string ToString();
 
         public int GetPosition() => position;
     }

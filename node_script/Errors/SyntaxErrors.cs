@@ -29,4 +29,12 @@ namespace node_script
             Error.ShowError("MissingDelimiterError: Could not find the delimiter: '" + delimiter + "' to end token or block. Check that you have closed your strings or code blocks.", linePos);
         }
     }
+
+    class MissingTokenError : Exception
+    {
+        public MissingTokenError(string tokenValue, int linePos) : base()
+        {
+            Error.ShowError($"MissingTokenError: Was expecting a '{tokenValue}' token but did not find one.", linePos);
+        }
+    }
 }

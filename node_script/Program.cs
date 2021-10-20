@@ -14,11 +14,10 @@ namespace node_script
             //Lexer.Test.Test1();
             string contents = Console.ReadLine();
             List<Token> tokens = Tokeniser.Tokenise(contents).ToList();
-            List<Step> steps = new List<Step>();
 
-            Parser.Parser.Parse(tokens, steps);
+            
 
-            foreach (Step step in steps)
+            foreach (Step step in Parser.Parser.Parse(tokens))
             {
                 Console.WriteLine(step.ToString());
             }

@@ -37,16 +37,19 @@ namespace node_script.PatternParsers
 
         }
 
-        public static List<Token> GrabDelimitedPattern(int index, List<Token> tokens, Token delimiter)
+        public static List<Token> GrabDelimitedPattern(List<Token> tokens, Token delimiter)
         {
             List<Token> toReturn = new List<Token>();
-            while (index < tokens.Count && !tokens[index].Matches(delimiter.Type, delimiter.Value))
+            while (!tokens[0].Matches(delimiter.Type, delimiter.Value))
             {
-                toReturn.Add(tokens[index]);
-                index++;
+                if (tokens.Count == 0) throw new MissingDelimiterError(delimiter.Value, 0);
+                // if we have got no more tokens but haven't found the delimiter, throw error
+
+                toReturn.Add(PopToken(tokens));
+                ; // removes first elem of the list.
             }
 
-            if (index == tokens.Count || !tokens[index].Matches(delimiter.Type, delimiter.Value)) throw new MissingDelimiterError(delimiter.Value, 0);
+            PopToken(tokens); // pop off delimiter
 
             return toReturn;
         }
@@ -86,17 +89,21 @@ namespace node_script.PatternParsers
 
             while (nestingIndex != -1)
             {
-                toReturn.Add(tokens[index]);
+                Token currentToken = PopToken(tokens);
+                toReturn.Add(currentToken);
 
-                if (tokens[index] == Opener) nestingIndex++;
-                else if (tokens[index] == Closer) nestingIndex--;
+                if (currentToken.Matches(Opener.Type, Opener.Value)) nestingIndex++;
+                else if (currentToken.Matches(Closer.Type, Closer.Value)) nestingIndex--;
 
-                index++;
-
-                if (index == tokens.Count) throw new MissingDelimiterError(Closer.Value, 0);
+                if (tokens.Count == 0 && nestingIndex != -1) throw new MissingDelimiterError(Closer.Value, 0);
                 // if we reach the end without enough Closers found, throw error.
                 // This will be caused by something like imbalanced brackets.
             }
+
+            toReturn.RemoveAt(toReturn.Count - 1);
+            // remove the last token because that will be the Closer token
+            // without this the result of the example above will return "1111 { 2222 { 3333 } } 4444}"
+            // instead of what it should be: "1111 { 2222 { 3333 } } 4444"
 
             return toReturn;
         }
@@ -116,6 +123,13 @@ namespace node_script.PatternParsers
 
 
             return !(i == parsers.Count); // if i == variableParsers.Count is TRUE then we have failed and must return FALSE.
+        }
+    
+        public static Token PopToken(List<Token> tokens)
+        {
+            Token toReturn = tokens[0];
+            tokens.RemoveAt(0);
+            return toReturn;
         }
     }
 }

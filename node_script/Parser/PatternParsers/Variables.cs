@@ -34,15 +34,16 @@ namespace node_script.PatternParsers
             // we know that this *has* to be a variable declaration now
             VariableDefinition varDef = new VariableDefinition(0);
 
-            varDef.Type = tokens[0].Value;
-            varDef.Name = tokens[1].Value;
-            // tokens[2] == "="
-            // so start index starts at 3 for the expression when grabbing:
-            varDef.Expression = ParserTools.GrabDelimitedPattern(3, tokens, new Token("grammar", ";"));
+            varDef.Type = ParserTools.PopToken(tokens).Value;
+            varDef.Name = ParserTools.PopToken(tokens).Value;
+
+
+            // tokens[2] == "=" so we need to pop it:
+            ParserTools.PopToken(tokens);
+
+            varDef.Expression = ParserTools.GrabDelimitedPattern(tokens, new Token("grammar", ";"));
 
             steps.Add(varDef);
-
-            tokens.RemoveRange(0, 3 + varDef.Expression.Count + 1); // remove all tokens we have eaten up to and including the ';'
 
             return true;
         }
@@ -56,14 +57,15 @@ namespace node_script.PatternParsers
 
             if (!ParserTools.IsMatch(pattern, tokens)) return false; // if no match then return false and exit this block
 
+            string name = ParserTools.PopToken(tokens).Value;
+            ParserTools.PopToken(tokens); // remove the "=" token
+
             VariableChange varChange = new VariableChange(
                 0, 
-                tokens[0].Value, // the first token is the IDENTIFIER type that contains the variable's name
-                ParserTools.GrabDelimitedPattern(2, tokens, new Token("grammar", ";"))); // grab the expression that begins after the '=' token and stops when you find a ';'
+                name, // the first token is the IDENTIFIER type that contains the variable's name
+                ParserTools.GrabDelimitedPattern(tokens, new Token("grammar", ";"))); // grab the expression that begins after the '=' token and stops when you find a ';'
 
             steps.Add(varChange);
-
-            tokens.RemoveRange(0, 2 + varChange.Expression.Count + 1); // Remove all tokens that we have just eaten up to and including the ';'
 
             return true;
         }

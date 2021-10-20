@@ -13,7 +13,7 @@ namespace node_script.PatternParsers
         // List of variable-related syntax parsing functions.
         {
             // This list will grow as I add more syntax variants for parsing anything to do with control flow.
-            
+            IfStatementParser
         };
         public static bool TryParseControlFlow(List<Token> tokens, List<Step> steps)
         {
@@ -27,19 +27,27 @@ namespace node_script.PatternParsers
             // "if ("
 
             if (!ParserTools.IsMatch(pattern, tokens)) return false; // if there is no match then exit the code block
+            ParserTools.PopToken(tokens);
+            ParserTools.PopToken(tokens); // pop off the 'if' and '('
 
             IfStatement ifStatem = new IfStatement(0);
 
-            ifStatem.IfCondition = ParserTools.GrabNestedPattern(2, tokens, 
+            ifStatem.IfCondition = ParserTools.GrabNestedPattern(0, tokens, 
                 new Token("grammar", "("), new Token("grammar", ")"));
             // Use the GrabNestedPattern tool to grab everything inside the if statement's ( and  )
             // GrabNestedPattern takes into account nested bracket statements.
 
-            List<Token> blockTokens = ParserTools.GrabNestedPattern(2 + ifStatem.IfCondition.Count, tokens,
+            if (!ParserTools.PopToken(tokens).Matches("grammar", "{")) throw new MissingTokenError("{", 0);
+
+            List<Token> blockTokens = ParserTools.GrabNestedPattern(0, tokens,
                 new Token("grammar", "{"), new Token("grammar", "}")); // grab everything inside { and }
 
 
-            List<Step> blockContents = Parser.Parser.Parse(blockTokens); // 
+            ifStatem.BlockContents = Parser.Parser.Parse(blockTokens); // parse the contents of the if statement code block
+
+            steps.Add(ifStatem);
+
+            return true;
         }
     }
 }

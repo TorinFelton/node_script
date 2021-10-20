@@ -18,10 +18,14 @@ namespace node_script.Parser.Steps.ControlFlow
         }
 
         public override string ToString()
-        {
-            string contents = "";
-            foreach (Step step in BlockContents) contents += "\n" + step.ToString();
-            return $"IF STATEMENT: if ({IfCondition}) {{ {contents} }}";
+        {            
+            string conditionCont = "";
+            foreach (Token tok in IfCondition) conditionCont += tok.Value;
+
+            string blockCont = "";
+            foreach (Step step in BlockContents) blockCont += "\n" + step.ToString();
+
+            return $"IF STATEMENT: if ({conditionCont}) {{ {blockCont} }}";
         }
     }
 }
