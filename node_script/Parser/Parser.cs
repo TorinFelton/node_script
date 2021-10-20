@@ -33,8 +33,9 @@ namespace node_script.Parser
         };
 
         // TODO: Step type, rm 'void'
-        public static void Parse(List<Token> tokenList, List<Step> steps)
+        public static List<Step> Parse(List<Token> tokenList)
         {
+            List<Step> parseSteps = new List<Step>();
             bool keepParsing = true;
 
             while (keepParsing && tokenList.Count > 0)
@@ -43,13 +44,15 @@ namespace node_script.Parser
 
                 foreach (Func<List<Token>, List<Step>, bool> parser in Parsers)
                 {
-                    if (parser(tokenList, steps)) keepParsing = true;
+                    if (parser(tokenList, parseSteps)) keepParsing = true;
                     // Try parsing using each parser and if they return true (successful) then keep the parent loop going.
                 }
             }
 
             // If we exited the loop because keepParsing was false BUT there were still tokens in the queue, it means we had syntax that none of our parsers understood.
             if (tokenList.Count > 0) throw new UnrecognisedSyntaxError(0); // TODO: Figure out line tracing method.
+
+            return parseSteps;
         }
     }
 }

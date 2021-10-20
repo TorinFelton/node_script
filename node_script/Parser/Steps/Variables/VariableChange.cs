@@ -7,7 +7,6 @@ namespace node_script.Parser.Steps.Variables
 {
     class VariableChange : Step
     {
-        private int position;
         public string Name;
         public List<Token> Expression = new List<Token>(); // value of variable but not yet resolved
 

@@ -9,30 +9,19 @@ namespace node_script.PatternParsers
 {
     static class Variables
     {
-        public static List<Func<List<Token>, List<Step>, bool>> variableParsers = new List<Func<List<Token>, List<Step>, bool>>() 
+        public static List<Func<List<Token>, List<Step>, bool>> VariableParsers = new List<Func<List<Token>, List<Step>, bool>>() // "List of functions that take arguments: List<Token>, List<Step> and return a bool
         // List of variable-related syntax parsing functions.
         {
             // This list will grow as I add more syntax variants for parsing anything to do with variables.
-            Variable_Definition, // e.g int a = 2 + 2;
-            Variable_Change,     // e.g a = 2;
+            VariableDefinitionParser, // e.g int a = 2 + 2;
+            VariableChangeParser,     // e.g a = 2;
         };
         public static bool TryParseVariables(List<Token> tokens, List<Step> steps)
         {
-            int i = 0;
-            while (
-                  i < variableParsers.Count             // while we have not ran out of parsers to try and
-               && !variableParsers[i](tokens, steps)    // we have not found a parser that has succeeded
-                  ) i++;
-            // when we reach this point, one of two things must have happened:
-            // 1. We didn't find a parser that managed to parse the token pattern we must return false, thus i == variableParser.Count must be TRUE.
-            // exclusively OR:
-            // 2. We found a parser that successfully parsed the token pattern and the loop ended because of it.
-            
-
-            return !(i == variableParsers.Count); // if i == variableParsers.Count is TRUE then we have failed and must return FALSE.
+            return ParserTools.TryParse(VariableParsers, tokens, steps);
         }
 
-        public static bool Variable_Definition(List<Token> tokens, List<Step> steps)
+        public static bool VariableDefinitionParser(List<Token> tokens, List<Step> steps)
         {
             // Pattern we're looking for:
             // IDENTIFIER IDENTIFIER = EXPR;
@@ -40,7 +29,7 @@ namespace node_script.PatternParsers
             // therefore we can only match the "IDENTIFIER INDEITIFER = " part first:
             List<string> pattern = new List<string>() { "!identifier", "!identifier", "$grammar =" };
 
-            if (!PatternTools.IsMatch(pattern, tokens)) return false; // if there is no match then return false and don't execute anything after.
+            if (!ParserTools.IsMatch(pattern, tokens)) return false; // if there is no match then return false and don't execute anything after.
             
             // we know that this *has* to be a variable declaration now
             VariableDefinition varDef = new VariableDefinition(0);
@@ -49,7 +38,7 @@ namespace node_script.PatternParsers
             varDef.Name = tokens[1].Value;
             // tokens[2] == "="
             // so start index starts at 3 for the expression when grabbing:
-            varDef.Expression = PatternTools.GrabDelimitedPattern(3, tokens, new Token("grammar", ";"));
+            varDef.Expression = ParserTools.GrabDelimitedPattern(3, tokens, new Token("grammar", ";"));
 
             steps.Add(varDef);
 
@@ -58,19 +47,19 @@ namespace node_script.PatternParsers
             return true;
         }
 
-        public static bool Variable_Change(List<Token> tokens, List<Step> steps)
+        public static bool VariableChangeParser(List<Token> tokens, List<Step> steps)
         {
             // Pattern we're looking for:
             // IDENTIFIER = EXPR;
 
             List<string> pattern = new List<string>() { "!identifier", "$grammar =" };
 
-            if (!PatternTools.IsMatch(pattern, tokens)) return false; // if no match then return false and exit this block
+            if (!ParserTools.IsMatch(pattern, tokens)) return false; // if no match then return false and exit this block
 
             VariableChange varChange = new VariableChange(
                 0, 
                 tokens[0].Value, // the first token is the IDENTIFIER type that contains the variable's name
-                PatternTools.GrabDelimitedPattern(2, tokens, new Token("grammar", ";"))); // grab the expression that begins after the '=' token and stops when you find a ';'
+                ParserTools.GrabDelimitedPattern(2, tokens, new Token("grammar", ";"))); // grab the expression that begins after the '=' token and stops when you find a ';'
 
             steps.Add(varChange);
 

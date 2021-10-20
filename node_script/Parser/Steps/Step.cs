@@ -4,7 +4,7 @@ using System.Text;
 
 namespace node_script.Parser.Steps
 {
-    abstract class Step
+    public abstract class Step
     {
         private int position;
 
