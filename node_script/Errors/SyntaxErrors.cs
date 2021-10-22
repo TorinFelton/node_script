@@ -9,7 +9,7 @@ namespace node_script
     {
         public DecimalSyntaxError(string value, int linePos) : base()
         {
-            Error.ShowError("DecimalSyntaxError: Could not tokenise this number correctly: '" + value + "'", linePos);
+            Error.ShowError($"DecimalSyntaxError: Could not tokenise this number correctly: '{value}'", linePos);
         }
 
     }
@@ -26,7 +26,15 @@ namespace node_script
     {
         public MissingDelimiterError(string delimiter, int linePos) : base()
         {
-            Error.ShowError("MissingDelimiterError: Could not find the delimiter: '" + delimiter + "' to end token or block. Check that you have closed your strings or code blocks.", linePos);
+            Error.ShowError($"MissingDelimiterError: Could not find the delimiter: '{delimiter}' to end token or block. Check that you have closed your strings or code blocks.", linePos);
+        }
+    }
+
+    class EOFError : Exception
+    {
+        public EOFError(string tip, int linePos) : base()
+        {
+            Error.ShowError($"EOFError: Ran out of tokens in the file unexpectedly. {tip}", linePos);
         }
     }
 

@@ -20,32 +20,58 @@ namespace node_script.PatternParsers
             return ParserTools.TryParse(ControlFlowParsers, tokens, steps);
         }
 
-        public static bool IfStatementParser(List<Token> tokens, List<Step> steps)
+        public static bool BlockParser(List<Token> tokens, List<Step> steps)
         {
-            // Pattern we're looking for that begins an if statement:
-            List<string> pattern = new List<string>() { "$identifier if", "$grammar ("};
-            // "if ("
+            if (!Labels.BlockOpeners.Contains(tokens[0].Value)) return false;
+            // assembly-style optimisation
+            // essentially exit this branch if the value required is not found
 
-            if (!ParserTools.IsMatch(pattern, tokens)) return false; // if there is no match then exit the code block
-            ParserTools.PopToken(tokens);
-            ParserTools.PopToken(tokens); // pop off the 'if' and '('
+            // if we have got past that initial check then we must be at a block opening.
 
-            IfStatement ifStatem = new IfStatement(0);
-
-            ifStatem.IfCondition = ParserTools.GrabNestedPattern(0, tokens, 
-                new Token("grammar", "("), new Token("grammar", ")"));
-            // Use the GrabNestedPattern tool to grab everything inside the if statement's ( and  )
-            // GrabNestedPattern takes into account nested bracket statements.
-
-            if (!ParserTools.PopToken(tokens).Matches("grammar", "{")) throw new MissingTokenError("{", 0);
+            int index = Labels.BlockOpeners.IndexOf(tokens[0].Value);
+            // get index of the opener char
+            // so for example if tokens[0].Value == '{'
+            // then in Labels.BlockOpeners "{([" it is at index 0
+            // therefore its corresponding closer is at index 0 in Labels.BlockClosers "})]"
+            string opener = Labels.BlockOpeners[index].ToString();
+            string closer = Labels.BlockClosers[index].ToString();
 
             List<Token> blockTokens = ParserTools.GrabNestedPattern(0, tokens,
-                new Token("grammar", "{"), new Token("grammar", "}")); // grab everything inside { and }
+                new Token("grammar", opener), new Token("grammar", closer));
+            // grabs all tokens in between the opener and closer, accounting for nesting
+            // e.g.
+            // something {
+            //  a = b;
+            //  something else {
+            //    c = d;
+            //  }
+            // }
+            // it will grab "a = b; something else { c = d; }" (as tokens) in this case
 
+            steps.Add(
+                new Block(0, Parser.Parser.Parse(blockTokens), (opener, closer))
+            );
+            // add a new Block Step object and parse the contents of it
+            // this is recursive in that any nested blocks inside the block will be parsed recursively descending until the highest nest level
 
-            ifStatem.BlockContents = Parser.Parser.Parse(blockTokens); // parse the contents of the if statement code block
+            return true;
+        }
 
-            steps.Add(ifStatem);
+        public static bool KeywordParser(List<Token> tokens, List<Step> steps)
+        {
+            if (!Labels.Keywords.Contains(tokens[0].Value)) return false;
+
+            if ("if for while loop when".Contains(tokens[0].Value))
+                steps.Add(new Keyword(0, tokens[0].Value, new List<string>()
+                    {
+                        "BLOCK (", "BLOCK {" // after these keywords we expect a () block and then a {} block
+                    }));
+            else if ("else".Contains(tokens[0].Value)) steps.Add(new Keyword(0, tokens[0].Value, new List<string>()
+            {
+                "BLOCK {" // after these keywords we only expect a {} block
+            }));
+            else return false;
+            
 
             return true;
         }

@@ -24,7 +24,7 @@ namespace node_script.PatternParsers
                     && patternElement.Substring(1) != tokens[i].Type) return false;
 
                 // $ is for the pattern "<TOK TYPE> <TOK VALUE>"
-                if (patternElement[0] == '$')
+                else if (patternElement[0] == '$')
                 {
                     string[] split = patternElement.Substring(1).Split(' ');
                     if (split[0] != tokens[i].Type || split[1] != tokens[i].Value) return false;
@@ -56,6 +56,7 @@ namespace node_script.PatternParsers
 
         public static List<Token> GrabNestedPattern(int index, List<Token> tokens, Token Opener, Token Closer)
         {
+            if (tokens.Count == 0) throw new EOFError($"Found an opening '{Opener.Value}' but nothing after.", 0);
             // Grab everything inside (including nesting) the opener and closer tokens
             /* E.g. 
              * Opener = new Token("grammar", "{"), Closer = new Token("grammar", "}")
