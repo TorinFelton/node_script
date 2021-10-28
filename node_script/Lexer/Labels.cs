@@ -14,7 +14,7 @@ namespace node_script.Lexer
 
         public const string IdentifierPattern = "[a-zA-Z]"; // Char pattern for the identifiers. Only supports alphabet for now.
 
-        public const string SingleGrammar = "(){};<>!|,"; // Special grammar chars that are tokenised individually
+        public const string SingleGrammar = ";<>!|," + BlockOpeners + BlockClosers; // Special grammar chars that are tokenised individually (including brackets, hence the BlockOpeners/Closers)
 
         public const string FlexGrammar = "=&"; // Special grammar characters that are to be tokenised together
 

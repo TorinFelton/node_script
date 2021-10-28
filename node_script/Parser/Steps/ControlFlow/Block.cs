@@ -18,7 +18,7 @@ namespace node_script.Parser.Steps.ControlFlow
         {
             string output = "";
             foreach (Step step in Contents) output += "\n" + step.ToString();
-            return $"CODE BLOCK: {Delimiters.Item1} {output} {Delimiters.Item2}";
+            return $"CODE BLOCK: {Delimiters.Item1} {output} {Delimiters.Item2}\nENDBLOCK";
         }
     }
 }

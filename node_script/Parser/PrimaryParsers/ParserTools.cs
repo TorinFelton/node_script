@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace node_script.PatternParsers
+namespace node_script.PrimaryParsers
 {
     public static class ParserTools
     {
@@ -39,14 +39,19 @@ namespace node_script.PatternParsers
 
         public static List<Token> GrabDelimitedPattern(List<Token> tokens, Token delimiter)
         {
+            if (tokens.Count == 0) throw new MissingDelimiterError(delimiter.Value, 0); // Can't find a delimiter if we have no tokens left at all...
+
             List<Token> toReturn = new List<Token>();
             while (!tokens[0].Matches(delimiter.Type, delimiter.Value))
             {
-                if (tokens.Count == 0) throw new MissingDelimiterError(delimiter.Value, 0);
-                // if we have got no more tokens but haven't found the delimiter, throw error
+
 
                 toReturn.Add(PopToken(tokens));
-                ; // removes first elem of the list.
+                // removes first elem of the list.
+
+
+                if (tokens.Count == 0) throw new MissingDelimiterError(delimiter.Value, 0);
+                // if we have got no more tokens but haven't found the delimiter, throw error
             }
 
             PopToken(tokens); // pop off delimiter
@@ -109,12 +114,12 @@ namespace node_script.PatternParsers
             return toReturn;
         }
 
-        public static bool TryParse(List<Func<List<Token>, List<Step>, bool>> parsers, List<Token> tokens, List<Step> steps)
+        public static bool TryPrimaryParse(List<Func<List<Token>, List<Step>, bool>> parsers, List<Token> tokens, List<Step> steps)
+            // Primary parsing for Tokens -> Steps
         {
             int i = 0;
 
-            while (
-                  i < parsers.Count             // while we have not ran out of parsers to try and
+            while (i < parsers.Count             // while we have not ran out of parsers to try and
                && !parsers[i](tokens, steps)    // we have not found a parser that has succeeded
                   ) i++;
             // when we reach this point, one of two things must have happened:
@@ -123,7 +128,19 @@ namespace node_script.PatternParsers
             // 2. We found a parser that successfully parsed the token pattern and the loop ended because of it.
 
 
-            return !(i == parsers.Count); // if i == variableParsers.Count is TRUE then we have failed and must return FALSE.
+            return !(i == parsers.Count); // if i == parsers.Count is TRUE then we have failed and must return FALSE.
+        }
+
+        public static bool TrySecondaryParse(List<Func<List<Step>, bool>> parsers, List<Step> steps)
+            // Secondary parsing for Steps -> Higher order Steps
+            // e.g [keyword:if, block:(), block:{}] -> [IfStatement]
+            // keywords and blocks get paired together and packed into one step.
+        {
+            int i = 0;
+            while (i < parsers.Count            // same as above, while we have not ran out of parsers
+                && !parsers[i](steps)) i++;     // and the current parser returns false (failed to parse), keep going
+
+            return !(i == parsers.Count); // if i == parsers.Count is TRUE then we did not find a parser that worked and reached the end of the list of parsers.
         }
     
         public static Token PopToken(List<Token> tokens)

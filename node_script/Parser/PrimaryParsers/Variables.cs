@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace node_script.PatternParsers
+namespace node_script.PrimaryParsers
 {
     static class Variables
     {
@@ -18,7 +18,7 @@ namespace node_script.PatternParsers
         };
         public static bool TryParseVariables(List<Token> tokens, List<Step> steps)
         {
-            return ParserTools.TryParse(VariableParsers, tokens, steps);
+            return ParserTools.TryPrimaryParse(VariableParsers, tokens, steps);
         }
 
         public static bool VariableDefinitionParser(List<Token> tokens, List<Step> steps)

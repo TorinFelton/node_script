@@ -5,25 +5,28 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace node_script.PatternParsers
+namespace node_script.PrimaryParsers
 {
-    static class ControlFlow
+    static class KeywordBlocks
+        // This is a primary parser to group up block keywords (e.g. 'if', 'while', etc.) and also separately parse any code blocks (anything in between brackets '(', '{', '[')
+        // These parsers are parsing the COMPONENTS of if statements, while loops, etc., not the actual loops entirely - that is done by the secondary parsers.
     {
-        public static List<Func<List<Token>, List<Step>, bool>> ControlFlowParsers = new List<Func<List<Token>, List<Step>, bool>>() // "List of functions that take arguments: List<Token>, List<Step> and return a bool
+        public static List<Func<List<Token>, List<Step>, bool>> KeywordBlockParsers = new List<Func<List<Token>, List<Step>, bool>>() // "List of functions that take arguments: List<Token>, List<Step> and return a bool
         // List of variable-related syntax parsing functions.
         {
             // This list will grow as I add more syntax variants for parsing anything to do with control flow.
-            IfStatementParser
+            KeywordParser,
+            BlockParser
         };
-        public static bool TryParseControlFlow(List<Token> tokens, List<Step> steps)
+        public static bool TryParseKeywordBlocks(List<Token> tokens, List<Step> steps)
         {
-            return ParserTools.TryParse(ControlFlowParsers, tokens, steps);
+            return ParserTools.TryPrimaryParse(KeywordBlockParsers, tokens, steps);
         }
 
         public static bool BlockParser(List<Token> tokens, List<Step> steps)
         {
             if (!Labels.BlockOpeners.Contains(tokens[0].Value)) return false;
-            // assembly-style optimisation
+            // assembly-style optimisation (inversing conditions to require less branch instructions)
             // essentially exit this branch if the value required is not found
 
             // if we have got past that initial check then we must be at a block opening.
@@ -35,6 +38,8 @@ namespace node_script.PatternParsers
             // therefore its corresponding closer is at index 0 in Labels.BlockClosers "})]"
             string opener = Labels.BlockOpeners[index].ToString();
             string closer = Labels.BlockClosers[index].ToString();
+
+            ParserTools.PopToken(tokens); // pop the '{' at the beginning because it is no longer needed.
 
             List<Token> blockTokens = ParserTools.GrabNestedPattern(0, tokens,
                 new Token("grammar", opener), new Token("grammar", closer));
@@ -59,19 +64,9 @@ namespace node_script.PatternParsers
 
         public static bool KeywordParser(List<Token> tokens, List<Step> steps)
         {
-            if (!Labels.Keywords.Contains(tokens[0].Value)) return false;
+            if (!Labels.Keywords.Contains(tokens[0].Value)) return false; // If the token value is not a keyword then return false
 
-            if ("if for while loop when".Contains(tokens[0].Value))
-                steps.Add(new Keyword(0, tokens[0].Value, new List<string>()
-                    {
-                        "BLOCK (", "BLOCK {" // after these keywords we expect a () block and then a {} block
-                    }));
-            else if ("else".Contains(tokens[0].Value)) steps.Add(new Keyword(0, tokens[0].Value, new List<string>()
-            {
-                "BLOCK {" // after these keywords we only expect a {} block
-            }));
-            else return false;
-            
+            steps.Add(new Keyword(0, tokens[0].Value)); // If we make it this far, we can guarantee it is a keyword, so just add it.
 
             return true;
         }

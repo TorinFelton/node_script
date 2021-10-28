@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace node_script.PatternParsers
+namespace node_script.PrimaryParsers
 {
-    static class Nodes
+    static class Functions
     {
-        public static bool TryParseNodes(List<Token> tokens, List<Step> steps)
+        public static bool TryParseFunctions(List<Token> tokens, List<Step> steps)
         {
             return false;
         }
