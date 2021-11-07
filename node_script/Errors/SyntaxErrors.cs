@@ -45,4 +45,12 @@ namespace node_script
             Error.ShowError($"MissingTokenError: Was expecting a '{tokenValue}' token but did not find one.", linePos);
         }
     }
+
+    class MissingParsingStep : Exception
+    {
+        public MissingParsingStep(string step, int linePos) : base()
+        {
+            Error.ShowError($"MissingParsingStep: Was expecting to find a '{step}' but did not find one.", linePos);
+        }
+    }
 }

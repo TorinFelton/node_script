@@ -54,7 +54,7 @@ namespace node_script.PrimaryParsers
             // it will grab "a = b; something else { c = d; }" (as tokens) in this case
 
             steps.Add(
-                new Block(0, Parser.Parser.Parse(blockTokens), (opener, closer))
+                new Block(0, blockTokens, (opener, closer))
             );
             // add a new Block Step object and parse the contents of it
             // this is recursive in that any nested blocks inside the block will be parsed recursively descending until the highest nest level

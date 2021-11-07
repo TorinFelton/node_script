@@ -4,7 +4,7 @@ using System.Text;
 
 namespace node_script.Parser.Steps.ControlFlow
 {
-    class Keyword : PseudoStep
+    public class Keyword : PseudoStep
     {
         public string Value;
 

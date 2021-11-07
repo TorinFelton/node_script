@@ -4,7 +4,7 @@ using System.Text;
 
 namespace node_script.Parser.Steps
 {
-    abstract class PseudoStep : Step
+    public abstract class PseudoStep : Step
     {
         public PseudoStep(int linePosition) : base(linePosition) { }
     }
